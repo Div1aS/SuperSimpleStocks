@@ -5,8 +5,8 @@
         public abstract Enums.StockType Type { get; }
         public readonly string Symbol;
         public readonly decimal LastDividend;
-        public decimal? FixedDividend { get; private set; }
-        public decimal ParValue { get; private set; }
+        public readonly decimal? FixedDividend;
+        public readonly decimal ParValue;
         private readonly IStockTrade _stockTrade;
         public decimal Price => _stockTrade.GetPrice(Symbol);
 

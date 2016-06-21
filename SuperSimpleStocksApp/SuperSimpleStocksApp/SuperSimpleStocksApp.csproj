@@ -47,11 +47,10 @@
     <Compile Include="Enums.cs" />
     <Compile Include="IStockTrade.cs" />
     <Compile Include="PreferredStock.cs" />
-    <Compile Include="PreferredStockFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stock.cs" />
-    <Compile Include="CommonStockFactory.cs" />
+    <Compile Include="ConcreteStockFactory.cs" />
     <Compile Include="StockFactory.cs" />
     <Compile Include="StockInitParams.cs" />
     <Compile Include="StockTrade.cs" />
