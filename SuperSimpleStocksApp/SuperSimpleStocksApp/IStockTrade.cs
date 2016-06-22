@@ -3,7 +3,7 @@
     public interface IStockTrade
     {
         decimal GetCalculatedPrice(string symbol);
-        decimal GetGBCEAllShareIndex();
+        double GetGBCEAllShareIndex();
         void MakeTrade(TradeParams trade);
         decimal GetPrice(string symbol);
     }

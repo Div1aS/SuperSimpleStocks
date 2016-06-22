@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 
 namespace SuperSimpleStocksApp
@@ -32,7 +33,7 @@ namespace SuperSimpleStocksApp
             && stockTrade.TimeStamp >= DateTime.Now.AddMinutes(RecordsInPast15Minutes)
             && stockTrade.Symbol == symbol))
             {
-                tradeSum += stockTrade.TradePrice + stockTrade.Quantity;
+                tradeSum += stockTrade.TradePrice * stockTrade.Quantity;
                 tradeQuantity += stockTrade.Quantity;
             }
             if (tradeSum == 0 || tradeQuantity == 0)
@@ -42,26 +43,29 @@ namespace SuperSimpleStocksApp
             return tradeSum / tradeQuantity;
         }
 
-        private decimal NthRoot(decimal tradePrices, int n)
+        private double NthRoot(double tradePrices, int n)
         {
-            return (decimal)Math.Pow(decimal.ToDouble(tradePrices), 1.0 / n);
+            return Math.Pow(tradePrices, 1.0 / n);
         }
 
         // ReSharper disable once InconsistentNaming
-        public decimal GetGBCEAllShareIndex()
+        public double GetGBCEAllShareIndex()
         {
-            var tradeMultiplication = 0M;
+            double tradeMultiplication = 0;
             var count = 0;
             foreach (var stockTrade in _storedStockTrades.Where(stockTrade => stockTrade.TradePrice != 0
             && stockTrade.Quantity != 0))
             {
                 if (tradeMultiplication == 0)
                 {
-                    tradeMultiplication = stockTrade.TradePrice;
+                    tradeMultiplication = (double)stockTrade.TradePrice;
                 }
                 else
                 {
-                    tradeMultiplication *= stockTrade.TradePrice;
+                    if (stockTrade.TradePrice != 0)
+                    {
+                        tradeMultiplication *= decimal.ToDouble(stockTrade.TradePrice);
+                    }
                 }
                 count += 1;
             }
