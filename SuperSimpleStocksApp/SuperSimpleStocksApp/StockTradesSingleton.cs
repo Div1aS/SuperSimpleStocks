@@ -14,19 +14,20 @@ namespace SuperSimpleStocksApp
 
         private StockTradesSingleton()
         {
+            _storedStockTrades = new List<StockTrade>();
         }
 
         // ReSharper disable once ConvertToAutoProperty
         public static StockTradesSingleton Instance => instance;
 
-        private static List<StockTrade> StoredStockTrades;
+        private static List<StockTrade> _storedStockTrades;
         public const double RecordsInPast15Minutes = -15;
 
         public decimal GetCalculatedPrice(string symbol)
         {
             var tradeSum = 0M;
             var tradeQuantity = 0M;
-            foreach (var stockTrade in StoredStockTrades.Where(stockTrade => stockTrade.TradePrice != 0
+            foreach (var stockTrade in _storedStockTrades.Where(stockTrade => stockTrade.TradePrice != 0
             && stockTrade.Quantity != 0
             && stockTrade.TimeStamp >= DateTime.Now.AddMinutes(RecordsInPast15Minutes)
             && stockTrade.Symbol == symbol))
@@ -51,10 +52,17 @@ namespace SuperSimpleStocksApp
         {
             var tradeMultiplication = 0M;
             var count = 0;
-            foreach (var stockTrade in StoredStockTrades.Where(stockTrade => stockTrade.TradePrice != 0
+            foreach (var stockTrade in _storedStockTrades.Where(stockTrade => stockTrade.TradePrice != 0
             && stockTrade.Quantity != 0))
             {
-                tradeMultiplication *= stockTrade.TradePrice;
+                if (tradeMultiplication == 0)
+                {
+                    tradeMultiplication = stockTrade.TradePrice;
+                }
+                else
+                {
+                    tradeMultiplication *= stockTrade.TradePrice;
+                }
                 count += 1;
             }
             return NthRoot(tradeMultiplication, count);
@@ -62,11 +70,12 @@ namespace SuperSimpleStocksApp
 
         public void MakeTrade(TradeParams trade)
         {
-            StoredStockTrades.Add(new StockTrade
+            _storedStockTrades.Add(new StockTrade
             {
                 Quantity = trade.Quantity,
                 TradePrice = trade.TradePrice,
                 Type = trade.Type,
+                Symbol = trade.Symbol,
                 TimeStamp = DateTime.Now
             });
         }
@@ -74,7 +83,7 @@ namespace SuperSimpleStocksApp
         public decimal GetPrice(string symbol)
         {
             var prices =
-                StoredStockTrades.OrderByDescending(s => s.TimeStamp)
+                _storedStockTrades.OrderByDescending(s => s.TimeStamp)
                     .Where(s => s.Symbol.Equals(symbol)).ToList();
             if ( !prices.Any())
             {

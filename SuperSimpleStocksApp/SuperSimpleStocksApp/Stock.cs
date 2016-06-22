@@ -21,7 +21,7 @@
 
         public abstract decimal GetCalculateDividendYield();
         // ReSharper disable once InconsistentNaming
-        public virtual decimal GetCalculatePERatio(IStockTrade stockTrade)
+        public virtual decimal GetCalculatePERatio()
         {
             return Price/LastDividend; //?
         }
