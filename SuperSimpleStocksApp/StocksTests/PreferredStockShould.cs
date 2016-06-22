@@ -5,12 +5,12 @@ using SuperSimpleStocksApp;
 namespace StocksTests
 {
     [TestFixture]
-    public class CommonStockShould
+    public class PreferredStockShould
     {
         private StockFactory _stockFactory;
         private IStockTrade _stockTrades;
-        private Stock _commonStock;
-        private const string Symbol = "TEA";
+        private Stock _preferedStock;
+        private const string Symbol = "GIN";
         private TradeParams _tradeParams;
 
         [SetUp]
@@ -18,7 +18,7 @@ namespace StocksTests
         {
             _stockFactory = new ConcreteStockFactory();
             _stockTrades = StockTradesSingleton.Instance;
-            _commonStock = new CreateStock().Get(_stockFactory, new StockInitParams { FixedDividend = 0, LastDividend = 10, ParValue = 100, Symbol = Symbol, Type = Enums.StockType.Common }, _stockTrades);
+            _preferedStock = new CreateStock().Get(_stockFactory, new StockInitParams { FixedDividend = 2, LastDividend = 10, ParValue = 100, Symbol = Symbol, Type = Enums.StockType.Preferred }, _stockTrades);
             _tradeParams = new TradeParams
             {
                 Quantity = 100,
@@ -33,11 +33,11 @@ namespace StocksTests
         public void InitializeStockCorrectly()
         {
             //Assert
-            _commonStock.Symbol.Should().Be(Symbol);
-            _commonStock.FixedDividend.HasValue.Should().BeTrue();
-            _commonStock.FixedDividend.Value.Should().Be(0M);
-            _commonStock.ParValue.Should().Be(100M);
-            _commonStock.Type.Should().Be(Enums.StockType.Common);
+            _preferedStock.Symbol.Should().Be(Symbol);
+            _preferedStock.FixedDividend.HasValue.Should().BeTrue();
+            _preferedStock.FixedDividend.Value.Should().Be(2M);
+            _preferedStock.ParValue.Should().Be(100M);
+            _preferedStock.Type.Should().Be(Enums.StockType.Preferred);
         }
 
         [Test]
@@ -52,9 +52,9 @@ namespace StocksTests
         {
             //Act
             _stockTrades.MakeTrade(_tradeParams);
-            var dividendYield = _commonStock.GetCalculateDividendYield();
+            var dividendYield = _preferedStock.GetCalculateDividendYield();
             //Assert
-            dividendYield.Should().Be(0.1M);
+            dividendYield.Should().Be(2M);
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace StocksTests
         {
             //Act
             _stockTrades.MakeTrade(_tradeParams);
-            var PERatio = _commonStock.GetCalculatePERatio();
+            var PERatio = _preferedStock.GetCalculatePERatio();
             //Assert
             PERatio.Should().Be(10);
         }

@@ -65,6 +65,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CommonStockShould.cs" />
+    <Compile Include="PreferredStockShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
