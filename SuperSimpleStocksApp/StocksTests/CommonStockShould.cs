@@ -1,6 +1,6 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
+using NSubstitute;
 using SuperSimpleStocksApp;
 
 namespace StocksTests
@@ -18,7 +18,7 @@ namespace StocksTests
         public void Setup()
         {
             _stockFactory = new ConcreteStockFactory();
-            _stockTrades = StockTradesSingleton.Instance;
+            _stockTrades = Substitute.For<IStockTrade>();
             _commonStock = new CreateStock().Get(_stockFactory, new StockInitParams { FixedDividend = 0, LastDividend = 10, ParValue = 100, Symbol = Symbol, Type = Enums.StockType.Common }, _stockTrades);
             _tradeParams = new TradeParams
             {
@@ -27,7 +27,6 @@ namespace StocksTests
                 TradePrice = 100,
                 Type = Enums.TradeType.Sell
             };
-            _stockTrades.MakeTrade(_tradeParams);
         }
 
         [Test]
@@ -44,15 +43,17 @@ namespace StocksTests
         [Test]
         public void SetPrice()
         {
+            //Act
+            _stockTrades.GetPrice(_tradeParams.Symbol).Returns(140m);
             //Assert
-            _stockTrades.GetPrice(Symbol).Should().Be(100);
+            _stockTrades.GetPrice(Symbol).Should().Be(140);
         }
 
         [Test]
         public void DividendYieldReturnResult()
         {
             //Act
-            _stockTrades.MakeTrade(_tradeParams);
+            _stockTrades.GetPrice(_tradeParams.Symbol).Returns(_tradeParams.TradePrice);
             var dividendYield = _commonStock.GetCalculateDividendYield();
             //Assert
             dividendYield.Should().Be(0.1M);
@@ -62,36 +63,12 @@ namespace StocksTests
         public void CalculatePERatioReturnResult()
         {
             //Act
-            _stockTrades.MakeTrade(_tradeParams);
+            _stockTrades.GetPrice(_tradeParams.Symbol).Returns(_tradeParams.TradePrice);
             var PERatio = _commonStock.GetCalculatePERatio();
             //Assert
             PERatio.Should().Be(10);
         }
 
-        [Test]
-        public void CalculateGeometricMeanReturnResult()
-        {
-            //Act
-            _stockTrades.MakeTrade(_tradeParams);
-            _stockTrades.MakeTrade(_tradeParams);
-            _stockTrades.MakeTrade(_tradeParams);
-            _stockTrades.MakeTrade(_tradeParams);
-            var geometricMean = _stockTrades.GetGBCEAllShareIndex();
-            var equals = Math.Abs(geometricMean - 100d) <= Math.Abs(geometricMean * .00001);
-            equals.Should().BeTrue();
-        }
 
-        [Test]
-        public void GetCalculatedPriceReturnResult()
-        {
-            //Act
-            _stockTrades.MakeTrade(_tradeParams);
-            _stockTrades.MakeTrade(_tradeParams);
-            _stockTrades.MakeTrade(_tradeParams);
-            _stockTrades.MakeTrade(_tradeParams);
-            var calculatedPrice = _stockTrades.GetCalculatedPrice(Symbol);
-            //Assert
-            calculatedPrice.Should().Be(100M);
-        }
     }
 }
