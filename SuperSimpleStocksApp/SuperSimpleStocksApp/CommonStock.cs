@@ -13,9 +13,5 @@
 
             return LastDividend / Price;
         }
-
-        public CommonStock(string symbol, decimal lastDividend, decimal fixedDividend, int parValue, IStockTrade stockTrade) : base(symbol, lastDividend, fixedDividend, parValue, stockTrade)
-        {
-        }
     }
 }
